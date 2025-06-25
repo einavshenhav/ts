@@ -6,7 +6,7 @@ node_modules
 .env.*
 
 # .js files
-.js
+*.js
 
 # Visual Studio Code configuration
 .vscode/
