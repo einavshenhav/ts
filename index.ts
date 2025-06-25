@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const createPacket = <Type>(data: Type): { data: Type, id: string} => {
+interface Packet<Type> {
+    data: Type,
+    id: string,
+}
+
+const createPacket = <Type>(data: Type): Packet<Type> => {
     const uuid: string = uuidv4();
     return {
         data,
@@ -15,5 +20,5 @@ text: "Hello",
 });
 console.log(`Packet source is: ${tcpPacket.data.src}`);
 
-const udpPacket = createPacket({ action: "Hello world" });
-console.log(`Packet action is: ${udpPacket.data.action }`);
+const udpPacket = createPacket("Hello world");
+console.log(`Packet action is: ${udpPacket.data }`);
