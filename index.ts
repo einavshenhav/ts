@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-const createPacket = (data: any): { data: any, id: string} => {
+const createPacket = <Type>(data: Type): { data: Type, id: string} => {
     const uuid: string = uuidv4();
     return {
         data,
