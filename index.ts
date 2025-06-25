@@ -1,25 +1,71 @@
 import { v4 as uuidv4 } from 'uuid';
 
 enum Protocol {
-    udp = "UDP", 
-    tcp = "TCP",
-    icmp = "ICMP"
+    UDP = "UDP", 
+    TCP = "TCP",
+    ICMP = "ICMP",
 }
 
-interface Packet<Type> {
-    data: Type,
+enum PacketSafety {
+    LOW = "LOW",
+    HIGH = "HIGH",
+    NONE = "NONE",
+}
+
+interface PacketDetails {
+    data: TCPData | UDPData | ICMPData
     protocol: Protocol,
     id: string,
 }
 
-const createPacket = <Type>(protocol: Protocol, data: Type): Packet<Type> => {
+interface TCPData {
+    src: string, 
+    dst: string, 
+    sequence: number,
+    text: string,
+}
+
+type UDPData = string;
+
+interface ICMPData {
+    action: string,
+}
+
+interface ParsedPacketDetails {
+    content: string,
+    safety: PacketSafety
+}
+
+interface Packet {
+    packet: ParsedPacketDetails,
+    contentLength: number,
+}
+
+const createPacket = <Type>(protocol: Protocol, data: Type): Packet => {
     const uuid: string = uuidv4();
+    const packet = packetParser({ data, protocol, id: uuid })
+    const contentLength = packet.content.length + packet.safety.length
     return {
-        data,
-        protocol,
-        id: uuid,
+        packet,
+        contentLength
     };
 };
+
+
+const packetParser = <Type>(packet: PacketDetails): ParsedPacketDetails => {
+    switch (packet.protocol) {
+        case Protocol.UDP:
+            return { content: String(packet.data), safety: PacketSafety.LOW };
+        case Protocol.ICMP:
+            return { content: `Action is ${packet.data.action}`, safety: PacketSafety.NONE };
+        case Protocol.TCP:
+            return {
+                content: `From: ${packet.data.src}, To: ${packet.data.dst}, Text: ${packet.data.text}`,
+                safety: PacketSafety.HIGH,
+            };
+    }
+};
+
 
 const tcpPacket = createPacket(Protocol.tcp, {src: "192.168.1.1", dst:
 "192.168.1.255", text: "Hello"});
