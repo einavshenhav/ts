@@ -1,24 +1,31 @@
 import { v4 as uuidv4 } from 'uuid';
 
+enum Protocol {
+    udp = "UDP", 
+    tcp = "TCP",
+    icmp = "ICMP"
+}
+
 interface Packet<Type> {
     data: Type,
+    protocol: Protocol,
     id: string,
 }
 
-const createPacket = <Type>(data: Type): Packet<Type> => {
+const createPacket = <Type>(protocol: Protocol, data: Type): Packet<Type> => {
     const uuid: string = uuidv4();
     return {
         data,
+        protocol,
         id: uuid,
     };
 };
 
-const tcpPacket = createPacket({
-src: "192.168.1.1",
-dst: "192.168.1.255",
-text: "Hello",
-});
-console.log(`Packet source is: ${tcpPacket.data.src}`);
+const tcpPacket = createPacket(Protocol.tcp, {src: "192.168.1.1", dst:
+"192.168.1.255", text: "Hello"});
+console.log(`Packet of protocol ${tcpPacket.protocol} with source
+${tcpPacket.data.src}`);
 
-const udpPacket = createPacket("Hello world");
-console.log(`Packet action is: ${udpPacket.data }`);
+const icmpPacket = createPacket(Protocol.icmp, { action: "PING" });
+console.log(`Packet of protocol ${icmpPacket.protocol} with action
+${icmpPacket.data.action}`);
